@@ -10,9 +10,21 @@ async function removeTradingViewAccess(tradingviewUsername: string) {
   const sessionIdSign = process.env.TRADINGVIEW_SESSION_ID_SIGN;
   const scriptId = process.env.TRADINGVIEW_SCRIPT_ID;
 
+  // Railway-compatible Puppeteer launch
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process',
+      '--disable-extensions'
+    ],
   });
 
   const page = await browser.newPage();
@@ -93,7 +105,6 @@ export async function POST(req: NextRequest) {
     if (event.action === "membership.went_valid") {
       console.log("New membership activated:", event.data.user.id);
       // User will add their username through the app
-      // You could also auto-grant if you collect username during checkout
     }
 
     if (event.action === "membership.went_invalid") {

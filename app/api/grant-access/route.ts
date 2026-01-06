@@ -42,9 +42,21 @@ export async function POST(req: NextRequest) {
 
     console.log("Adding user:", tradingviewUsername);
 
+    // Railway-compatible Puppeteer launch
     browser = await puppeteer.launch({
-      headless: true, // Change back to true for production
-      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+      headless: true,
+      executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || '/usr/bin/chromium',
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-accelerated-2d-canvas',
+        '--disable-gpu',
+        '--no-first-run',
+        '--no-zygote',
+        '--single-process',
+        '--disable-extensions'
+      ],
     });
 
     const page = await browser.newPage();
@@ -189,7 +201,7 @@ export async function POST(req: NextRequest) {
       where: { whopUserId },
       create: {
         whopUserId,
-        whopMembershipId: whopUserId, // You'll get this from webhook
+        whopMembershipId: whopUserId,
         tradingviewUsername,
         active: true,
       },
