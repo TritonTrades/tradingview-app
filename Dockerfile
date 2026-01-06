@@ -6,28 +6,32 @@ WORKDIR /app
 
 # Set environment variables for Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true \
-    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+    PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable \
+    NODE_ENV=production
 
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including devDependencies for build)
+RUN npm ci
 
 # Copy prisma schema
 COPY prisma ./prisma/
 
-# Generate Prisma Client (this doesn't need DATABASE_URL)
+# Generate Prisma Client
 RUN npx prisma generate
 
 # Copy the rest of the application
 COPY . .
 
-# Build Next.js (DATABASE_URL not needed for build)
+# Build Next.js
 RUN npm run build
+
+# Remove devDependencies after build to reduce image size
+RUN npm prune --production
 
 # Expose port
 EXPOSE 3000
 
-# Run migrations and start the app (DATABASE_URL available at runtime)
+# Run migrations and start the app
 CMD npx prisma migrate deploy && npm start
