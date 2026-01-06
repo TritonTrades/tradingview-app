@@ -9,7 +9,11 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.1",
+    "@whop-sdk/core": "^0.0.2",
+    "@whop/react": "^0.3.0",
     "next": "16.1.1",
+    "puppeteer": "^24.34.0",
     "react": "19.2.3",
     "react-dom": "19.2.3"
   },
@@ -20,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "prisma": "^6.19.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
